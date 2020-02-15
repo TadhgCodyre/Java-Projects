@@ -1,0 +1,109 @@
+import java.util.Random; 
+ 
+public class CT255_HashFunction1 { 
+ 
+    public static void main(String[] args) { 
+        int res = 0; 
+ 
+        if (args != null && args.length > 0) { // Check for <input> value 
+            res = hashF1(args[0]); // call hash function with <input> 
+            if (res < 0) { // Error 
+                System.out.println("Error: <input> must be 1 to 64 characters long."); 
+            } 
+            else { 
+                System.out.println("input = " + args[0] + " : Hash = " + res); 
+                System.out.println("Start searching for collisions"); 
+                //chose a Character random from this String 
+                String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890"; 
+                //Length of the string to be generated 
+                int length = (int)Math.floor(Math.random()* 64);      
+                //This casues each  to be random different lengths of max 64, the casting is important 
+                int count = 0;   //Counter to count the number of collisions 
+                while(true) 
+                { 
+                    //create StringBuffer size of AlphaNumericString 
+                    StringBuilder sb = new StringBuilder(length); 
+                     
+                    for (int i = 0; i < length; i++) 
+                    { 
+                        // generate a random number between 0 nad n 
+                        int index = (int)(alphabet.length() * Math.random()); 
+                        //add Character one by one and append to the end of sb 
+                        sb.append(alphabet.charAt(index)); 
+                        count++; 
+                    } 
+                    //generate hashcode for random string 
+                    int hash = hashF1(sb.toString()); 
+                     
+                    //print randomly generated string 
+                    System.out.println("Random String: "+sb); 
+                     
+                    //print hashcode for random string 
+                    System.out.println("Hash Code: "+hash); 
+                     
+                    if(hash == res) {//When collision is found alert user and break loop 
+                        System.out.println("Hash Collision Found"); 
+                        System.out.println("Counter:" +count); 
+                        break; 
+                } 
+              } 
+           } 
+        }  
+        else 
+        { 
+            System.out.println("Use: CT255_HashFunction1 <Input>"); 
+        } 
+    } 
+                         
+ 
+         
+    private static int hashF1(String s){ 
+        int ret = -1, i; 
+        int[] hashA = new int[]{1, 1, 1, 1, 1, 1, 1, 1}; 
+         
+        String filler, sIn; 
+         
+        filler = new String("ABCDEFGHABCDEFGHABCDEFGHABCDEFGHABCDEFGHABCDEFGHABCDEFGHABCDEF GH"); 
+         
+        if ((s.length() > 64) || (s.length() < 1)) { // String does not have required length 
+            ret = -1; 
+        } 
+        else { 
+            sIn = s + filler; // Add characters, now have "<input>HABCDEF..." 
+            sIn = sIn.substring(0, 64); // // Limit string to first 64 characters 
+             System.out.println(sIn); // FYI 
+            for (i = 0; i < sIn.length(); i++){ 
+                char byPos = sIn.charAt(i); // get i'th character 
+                hashA[0] += (byPos * 17); // Note: A += B means A = A + B 
+                hashA[1] += (byPos * 31); 
+                hashA[2] += (byPos * 101); 
+                hashA[3] += (byPos * 79); 
+                hashA[4] += (byPos * 45); 
+                hashA[5] += (byPos * 90); 
+                hashA[6] += (byPos * 84); 
+                hashA[7] += (byPos * 242); 
+            }  
+             
+            hashA[0] %= 255;  // % is the modulus operation, i.e. division with rest 
+            hashA[1] %= 255; 
+            hashA[2] %= 255; 
+            hashA[3] %= 255; 
+            hashA[4] %= 255;  
+            hashA[5] %= 255; 
+            hashA[6] %= 255; 
+            hashA[7] %= 255; 
+             
+            ret = hashA[0] + (hashA[1] * 256) + (hashA[2] * 256 * 256) + (hashA[3] * 256 * 256 * 256) + 
+                  (hashA[4] * 256 * 256 * 256 * 256) + (hashA[5] * 256 * 256 * 256 * 256 * 256) + 
+                 (hashA[6]  * 256 * 256 * 256 * 256 * 256 *256) + (hashA[7]  * 256 * 256 * 256 * 256 * 256 * 256 *256); 
+            if (ret < 0) ret *= -1; 
+        } 
+        return ret; 
+    }     
+     
+    /*private static int random(int upperlimit) 
+    { 
+        Random random = new Random(); 
+        return random.nextInt(upperlimit); 
+    }*/ 
+} 
